@@ -1,0 +1,16 @@
+# Git files
+.gitignore
+
+# Python requirement files (if not needed for this Node.js project)
+
+# npm files
+package-lock.json
+
+# Node modules (these will be installed inside the container)
+node_modules
+
+# Log files
+combined.log
+
+# SQLite database file
+transaction_history.db

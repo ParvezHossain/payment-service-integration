@@ -1,38 +1,38 @@
 # Payment Processing Service
 
-This project involves building a payment processing service that handles payments using Shift4 and ACI payment gateways. The service will expose RESTful endpoints to process payments and provide a command-line interface (CLI) for interacting with these endpoints. The goal is to create a unified and standardized payment processing system using Node.js with Express.
+This project involves building a payment processing service that handles payments using Shift4 and ACI payment gateways. The service exposes RESTful endpoints for processing payments and provides a command-line interface (CLI) for interacting with these endpoints. The goal is to create a unified and standardized payment processing system using Node.js with Express.
+
 
 Here, I am using SQLite database to save the custom unique id, transaction ids, payment type (SHIFT4 or ACI), and transaction details for ACI as I did not find the API endpoint to retrieve the transaction history from ACI.
 
-## Features
-- RESTful API for payment processing
-- Secure coding practices with Helmet, CORS, XSS protection, and more
-- Dockerized for easy deployment
-- CLI commands for interacting with the API
-- You can set maximum request for an API end point by overriding this MAX_REQUEST_PER_15_MINS in .env file
+## Key Features
+- **RESTful API**: Endpoints for payment processing.
+- **Security**: Implemented with Helmet, CORS, XSS protection, and more.
+- **Dockerization**: Easy deployment using Docker.
+- **CLI Commands**: Interact with the API via command-line commands.
+- **Rate Limiting**: Configure maximum requests per API endpoint using the `MAX_REQUEST_PER_15_MINS` variable in the `.env` file.
 
 ## Requirements
-- Node.js v14+
-- Docker (optional, for containerization)
+- **Node.js**: Version 18 or higher.
+- **Docker**: Optional, for containerization.
 
 ## Installation
-1. Clone the repository:
-   ```bash
-   https://github.com/ParvezHossain/payment-service-integration
-   cd payment-processing-service
-   npm install
 
-## Set Up Environment Variables:
+### 1. Clone the Repository
 
-      touch .env
+      git clone https://github.com/ParvezHossain/payment-service-integration
+      cd payment-processing-service
+      npm install
 
-Add the following content to the .env file, and adjust you credentials
+## 2. Set Up Environment Variables
+
+Create a `.env` file in the project root directory and add the following content, adjusting for your credentials:
 
       HOST=localhost 
       PORT=3000
       MAX_REQUEST_PER_15_MINS=100
-      SHIFT4_API_KEY=sk_test_NC6AbQAq0i6Xw82ju0LT4n15:
-      ACI_API_KEY=ifE4djkhMTc0YjdlY2IyODAxNGI5Njk5MjIwMDE1Y2N8c3k2S0pzVDg=
+      SHIFT4_API_KEY=sk_test_NC6AbQAq0i6Xw82ju0LT4n15
+      ACI_API_KEY=OGE4Mjk0MTc0YjdlY2IyODAxNGI5Njk5MjIwMDE1Y2N8c3k2S0pzVDg=
       ACI_ENTITY_ID=8a8294174b7ecb28014b9699220015ca
       NODE_ENV=development
 
@@ -53,7 +53,7 @@ Add the following content to the .env file, and adjust you credentials
       }'
 
 
-This is example response body for successful charge request
+Example Response for Shift4 Payment
 
       {
          "status": "success",
@@ -68,7 +68,8 @@ This is example response body for successful charge request
          }
       }
 
-### Process Payment with ACI: [Currently we only accept EURO as paymeny currency]
+
+### Process Payment with ACI (Currently only accepts EUR)
 
       curl -X POST http://localhost:3000/api/v1/payments/aci \
       -H "Content-Type: application/json" \
@@ -98,15 +99,26 @@ This is the example response body for ACI payment
 
 ### To execute the API using command line, you can use these commands. (Go to the project directory)
 
-Pay with SHIFT4
-
+Pay with SHIFT4:
 
       node cli/cliCommands.js pay_with shift4 --amount 100 --currency USD --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
 
-Pay with ACI
+Pay with ACI: 
+> **Note:** Currently, We only accept EUR as payment currency
+
 
       node cli/cliCommands.js pay_with aci --amount 100 --currency EUR --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
 
-Get the transaction history (use the custom_tnx_id key from response body to get the transaction history)
+Get the transaction history (use the `custom_tnx_id` key from response body to get the transaction history)
 
       node cli/cliCommands.js get_payment_status --payment_id 60483844-4865-4e10-a3d3-05c9959975c1
+
+
+### RUN through DOCKER
+
+Go to the project folder root directory and run the first command to build the image and run the container in detached mode. And run the second command to stop the volume. After successfully install, you can access tha APIs. 
+
+> **Note:** Currently, executing the API endpoints via the command line is not supported.
+
+      docker-compose up --build -d
+      docker-compose down
