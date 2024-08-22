@@ -25,7 +25,7 @@ app.use(compression()); // Compress response bodies
 // Rate Limiting (Limit repeated requests to public APIs)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.MAX_REQUEST_PER_15_MINS, // limit each IP to 100 requests per windowMs
   message: "Too many requests from this IP, please try again after 15 minutes",
 });
 app.use(limiter);
@@ -46,9 +46,11 @@ app.use(errorHandler); // Custom error handler for other errors
 
 // Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const HOST = process.env.HOST || 'localhost';
+
+app.listen(PORT, HOST, () => {
   console.log(
-    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`
+    `Server is running in ${process.env.NODE_ENV} mode on http://${HOST}:${PORT}`
   );
 });
 

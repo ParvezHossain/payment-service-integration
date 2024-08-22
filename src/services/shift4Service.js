@@ -39,7 +39,6 @@ class Shift4Service {
   }
 
   async paymentStatus({ transactionId }) {
-    console.log("transactionId", transactionId);
     try {
       const response = await axios.get(
         `https://api.shift4.com/charges/${transactionId}`, // Full URL
@@ -60,6 +59,11 @@ class Shift4Service {
         card_bin: response.data.card.first6,
       };
     } catch (error) {
+      logger.error(
+        `Error fetching payment status: ${
+          error.response?.data || error.message
+        }`
+      );
       throw new Error(
         `Error fetching payment status: ${
           error.response?.data || error.message

@@ -3,7 +3,9 @@ const aciService = require("../services/aciService");
 const apiResponse = require("../utils/apiResponse");
 const db = require("../config/database");
 const { v4: uuidv4 } = require("uuid");
-const Joi = require('joi');
+const Joi = require("joi");
+const logger = require("../config/logger");
+const formatDate = require("../utils/transformDate");
 
 class PaymentController {
   async processShift4Payment(req, res) {
@@ -12,26 +14,27 @@ class PaymentController {
       const result = await shift4Service.processPayment(paymentData);
       const payment_type = "SHIFT4";
       let details = {};
+
+      // Generate a unique custom_tnx_id using uuid
+      const custom_tnx_id = uuidv4();
       if (result) {
         details = {
+          custom_tnx_id,
           tnx_id: result.id,
-          created_at: result.created,
+          created_at: formatDate(result.created),
           amount: result.amount,
           currency: result.currency,
           card_bin: result.card.first6,
         };
       }
-
-      // Generate a unique custom_tnx_id using uuid
-      const custom_tnx_id = uuidv4();
       db.run(
         "INSERT INTO records (custom_tnx_id, tnx_id, payment_type) VALUES (?, ?, ?)",
         [custom_tnx_id, details.tnx_id, payment_type],
         function (err) {
           if (err) {
-            console.log("Failed to insert");
+            logger.error(`Database error: ${err.message}`);
           } else {
-            console.log("Inserted new records into database");
+            logger.info("Inserted new records into database");
           }
         }
       );
@@ -46,22 +49,37 @@ class PaymentController {
     try {
       const paymentData = req.body;
       const result = await aciService.processPayment(paymentData);
+      const payment_type = "ACI";
 
       // Generate a unique custom_tnx_id using uuid
       const custom_tnx_id = uuidv4();
+      let tnx_details = {
+        custom_tnx_id,
+        tnx_id: result.id,
+        amount: result.amount,
+        currency: result.currency,
+        card_bin: result.card.bin,
+        created_at: result.timestamp,
+      };
+
+      // Convert tnx_details object to JSON string
+      const tnxDetailsString = JSON.stringify(tnx_details);
+
       db.run(
-        "INSERT INTO records (custom_tnx_id, tnx_id, payment_type) VALUES (?, ?, ?)",
-        [custom_tnx_id, details.tnx_id, payment_type],
+        "INSERT INTO records (custom_tnx_id, tnx_id, payment_type, tnx_details) VALUES (?, ?, ?, ?)",
+        [custom_tnx_id, result.id, payment_type, tnxDetailsString],
         function (err) {
           if (err) {
-            console.log("Failed to insert");
+            logger.error(`Database error: ${err.message}`);
           } else {
-            console.log("Inserted new records into database");
+            logger.info("Inserted new records into database");
           }
         }
       );
 
-      res.json(apiResponse.success("Payment processed successfully", result));
+      res.json(
+        apiResponse.success("Payment processed successfully", tnx_details)
+      );
     } catch (error) {
       res.status(500).json(apiResponse.error(error.message));
     }
@@ -69,8 +87,6 @@ class PaymentController {
 
   async getPaymentStatus(req, res) {
     try {
-      const testTnxId = req.params.id;
-
       // Validate the testTnxId parameter
       const schema = Joi.object({
         id: Joi.string().trim().required().messages({
@@ -79,7 +95,9 @@ class PaymentController {
         }),
       });
 
-      const { error, value } = schema.validate({ id: req.params.id });
+      const { error, value: { id: testTnxId } = {} } = schema.validate({
+        id: req.params.id,
+      });
 
       if (error) {
         return res
@@ -94,13 +112,13 @@ class PaymentController {
           [testTnxId],
           function (err, row) {
             if (err) {
-              console.log("Database error:", err.message);
+              logger.error(`Database error: ${err.message}`);
               reject(err);
             } else if (row) {
-              console.log("Record found:", row);
+              logger.info("Record found:", row);
               resolve(row);
             } else {
-              console.log("No record found.");
+              logger.info("No record found.");
               resolve(null);
             }
           }
@@ -119,7 +137,9 @@ class PaymentController {
       if (paymentType === "SHIFT4") {
         result = await shift4Service.paymentStatus({ transactionId });
       } else if (paymentType === "ACI") {
-        result = await aciService.paymentStatus({ transactionId });
+        // TODO: I don't find the ACI API endpoint to get transaction hisgtory. So saved it to the DB and read it from there
+        // result = await aciService.paymentStatus({ transactionId });
+        result = JSON.parse(record.tnx_details);
       } else {
         return res
           .status(400)
