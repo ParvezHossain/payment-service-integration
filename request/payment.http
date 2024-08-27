@@ -1,0 +1,32 @@
+@base = http://localhost:3000/api/v1/payments
+
+@tx_shift4 = 627e5e73-5607-42f4-8a96-f22fe54ba707
+@tx_aci = 95548d9f-1ee3-4695-a2bb-4484ccb77752
+POST  {{base}}/shift4
+Content-Type: application/json
+
+{
+  "amount": "100000",
+  "currency": "USD",
+  "cardNumber": "4012000100000007", 
+  "cvv": "123",
+  "expMonth": "08",
+  "expYear": "2024"
+}
+
+###
+
+POST  {{base}}/aci
+Content-Type: application/json
+
+{
+  "amount": "10002",
+  "currency": "EUR",
+  "cardNumber": "4012000100000007", 
+  "cvv": "123",
+  "expMonth": "08",
+  "expYear": "2024"
+}
+
+###
+GET {{base}}/{{tx_shift4}}

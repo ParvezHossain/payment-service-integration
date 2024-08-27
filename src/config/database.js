@@ -23,7 +23,6 @@ const db = new sqlite3.Database(dbName, (err) => {
         (err) => {
           if (err) {
             logger.error(`Failed to create records table: ${err.message}`);
-            console.error("Failed to create records table");
           } else {
             logger.info(
               "Successfully created the records table or table already exists"
