@@ -1,7 +1,7 @@
 @base = http://localhost:3000/api/v1/payments
 
-@tx_shift4 = 627e5e73-5607-42f4-8a96-f22fe54ba707
-@tx_aci = 95548d9f-1ee3-4695-a2bb-4484ccb77752
+@tx_shift4 = e4c571a5-52ca-475c-baf1-113b2b9f0949
+@tx_aci = ae5e13ec-5d82-40f5-91af-2613bdc9fade
 POST  {{base}}/shift4
 Content-Type: application/json
 
@@ -29,4 +29,4 @@ Content-Type: application/json
 }
 
 ###
-GET {{base}}/{{tx_shift4}}
+GET {{base}}/{{tx_aci}}

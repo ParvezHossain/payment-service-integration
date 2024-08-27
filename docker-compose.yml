@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     ports:
-      - "3000:3000" # Mapping container port to host port
+      - "${EXPOSE_PORT}:${PORT}" # Mapping container port to host port
     environment:
       NODE_ENV: ${NODE_ENV}
       PORT: ${PORT} # Ensure PORT is passed correctly
