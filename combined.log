@@ -4,3 +4,24 @@
 2024-08-22T12:28:23.085Z [32minfo[39m: Successfully created the records table or table already exists
 2024-08-22T12:29:22.649Z [32minfo[39m: Successfully created the records table or table already exists
 2024-08-22T12:31:33.247Z [32minfo[39m: Successfully created the records table or table already exists
+2024-08-27T13:37:38.694Z [32minfo[39m: Successfully created the records table or table already exists
+2024-08-27T13:37:39.684Z [32minfo[39m: Payment processed successfully
+2024-08-27T13:37:39.684Z [32minfo[39m: {
+  "custom_tnx_id": "756c3eb0-44a8-4cfa-9585-779660eebeaa",
+  "tnx_id": "char_D3qshv1ZIWiaGligjwKcb5b9",
+  "amount": "100",
+  "currency": "USD",
+  "card_bin": "401200",
+  "created_at": "2024-08-27 13:37:22.000+0000"
+}
+2024-08-27T13:40:13.080Z [32minfo[39m: Successfully created the records table or table already exists
+2024-08-27T13:40:37.082Z [32minfo[39m: Successfully created the records table or table already exists
+2024-08-27T13:40:38.265Z [32minfo[39m: Payment processed successfully
+2024-08-27T13:40:38.266Z [32minfo[39m: {
+  "custom_tnx_id": "ada4a900-c02a-4c58-8531-3e903155d75f",
+  "tnx_id": "char_M8EL5t1rQcZDEui3psfQi4Dt",
+  "amount": "100",
+  "currency": "USD",
+  "card_bin": "401200",
+  "created_at": "2024-08-27 13:40:21.000+0000"
+}

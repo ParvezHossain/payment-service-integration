@@ -2,10 +2,10 @@
 
 This project involves building a payment processing service that handles payments using Shift4 and ACI payment gateways. The service exposes RESTful endpoints for processing payments and provides a command-line interface (CLI) for interacting with these endpoints. The goal is to create a unified and standardized payment processing system using Node.js with Express.
 
-
 Here, I am using SQLite database to save the custom unique id, transaction ids, payment type (SHIFT4 or ACI), and transaction details for ACI as I did not find the API endpoint to retrieve the transaction history from ACI.
 
 ## Key Features
+
 - **RESTful API**: Endpoints for payment processing.
 - **Security**: Implemented with Helmet, CORS, XSS protection, and more.
 - **Dockerization**: Easy deployment using Docker.
@@ -13,6 +13,7 @@ Here, I am using SQLite database to save the custom unique id, transaction ids, 
 - **Rate Limiting**: Configure maximum requests per API endpoint using the `MAX_REQUEST_PER_15_MINS` variable in the `.env` file.
 
 ## Requirements
+
 - **Node.js**: Version 18 or higher.
 - **Docker**: Optional, for containerization.
 
@@ -23,12 +24,13 @@ Here, I am using SQLite database to save the custom unique id, transaction ids, 
       git clone https://github.com/ParvezHossain/payment-service-integration
       cd payment-processing-service
       npm install
+      npm install -g .
 
 ## 2. Set Up Environment Variables
 
 Create a `.env` file in the project root directory and add the following content, adjusting for your credentials:
 
-      HOST=localhost 
+      HOST=localhost
       PORT=3000
       MAX_REQUEST_PER_15_MINS=100
       SHIFT4_API_KEY=sk_test_NC6AbQAq0i6Xw82ju0LT4n15
@@ -36,22 +38,20 @@ Create a `.env` file in the project root directory and add the following content
       ACI_ENTITY_ID=8a8294174b7ecb28014b9699220015ca
       NODE_ENV=development
 
-
 ## API Endpoints
 
-### Process Payment with Shift4: 
-      
+### Process Payment with Shift4:
+
       curl -X POST http://localhost:3000/api/v1/payments/shift4 \
       -H "Content-Type: application/json" \
       -d '{
       "amount": "10002",
       "currency": "USD",
-      "cardNumber": "4012000100000007", 
+      "cardNumber": "4012000100000007",
       "cvv": "123",
       "expMonth": "08",
       "expYear": "2024"
       }'
-
 
 Example Response for Shift4 Payment
 
@@ -68,7 +68,6 @@ Example Response for Shift4 Payment
          }
       }
 
-
 ### Process Payment with ACI (Currently only accepts EUR)
 
       curl -X POST http://localhost:3000/api/v1/payments/aci \
@@ -76,7 +75,7 @@ Example Response for Shift4 Payment
       -d '{
       "amount": "10002",
       "currency": "EUR",
-      "cardNumber": "4012000100000007", 
+      "cardNumber": "4012000100000007",
       "cvv": "123",
       "expMonth": "08",
       "expYear": "2024"
@@ -101,24 +100,24 @@ This is the example response body for ACI payment
 
 Pay with SHIFT4:
 
-      node cli/cliCommands.js pay_with shift4 --amount 100 --currency USD --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
+      paymentcli pay_with shift4 --amount 100 --currency USD --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
+      docker exec -it <container_id> paymentcli pay_with shift4 --amount 100 --currency USD --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
 
-Pay with ACI: 
+Pay with ACI:
+
 > **Note:** Currently, We only accept EUR as payment currency
 
-
-      node cli/cliCommands.js pay_with aci --amount 100 --currency EUR --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
+      paymentcli pay_with aci --amount 100 --currency EUR --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
+      docker exec -it <container_id> paymentcli pay_with aci --amount 100 --currency EUR --card_number 4012000100000007 --expiry_date 12/2024 --cvv 123
 
 Get the transaction history (use the `custom_tnx_id` key from response body to get the transaction history)
 
-      node cli/cliCommands.js get_payment_status --payment_id 60483844-4865-4e10-a3d3-05c9959975c1
-
+      paymentcli get_payment_status --payment_id 60483844-4865-4e10-a3d3-05c9959975c1
+      docker exec -it <container_id> paymentcli get_payment_status --payment_id 60483844-4865-4e10-a3d3-05c9959975c1
 
 ### RUN through DOCKER
 
-Go to the project folder root directory and run the first command to build the image and run the container in detached mode. And run the second command to stop the volume. After successfully install, you can access tha APIs. 
-
-> **Note:** Currently, executing the API endpoints via the command line is not supported.
+Go to the project folder root directory and run the first command to build the image and run the container in detached mode. And run the second command to stop the image. After successfully install, you can access tha APIs.
 
       docker-compose up --build -d
       docker-compose down
